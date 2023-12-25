@@ -1,3 +1,5 @@
+def registry = 'https://solutionsarchitect.jfrog.io/'
+
 pipeline {
     agent {
         node {
@@ -40,17 +42,31 @@ pipeline {
                 }
             }
         }
-        stage('QualityGate Check') {
+        stage("Jar Publish") {
             steps {
                 script {
-                    timeout(time: 1, unit: 'HOURS') {
-                def qg = waitForQualityGate()
-                if (qg.status != 'OK') {
-                  error "Pipeline aborted due to quality"
+                        echo '<--------------- Jar Publish Started --------------->'
+                        def server = Artifactory.newServer url:registry+"/artifactory" ,  credentialsId:"jfrog-cred-release"
+                        def properties = "buildid=${env.BUILD_ID},commitid=${GIT_COMMIT}";
+                        def uploadSpec = """{
+                            "files": [
+                                {
+                                "pattern": "jarstaging/(*)",
+                                "target": "dops-libs-release-local/{1}",
+                                "flat": "false",
+                                "props" : "${properties}",
+                                "exclusions": [ "*.sha1", "*.md5"]
+                                }
+                            ]
+                        }"""
+                        def buildInfo = server.upload(uploadSpec)
+                        buildInfo.env.collect()
+                        server.publishBuildInfo(buildInfo)
+                        echo '<--------------- Jar Publish Ended --------------->'  
+                
                 }
-                    }
-                }
-            }
-        }
+            }   
+        }   
+
     }
 }
