@@ -9,7 +9,7 @@ pipeline {
 
         stage('Clone Repo') {
             steps {
-                git branch: 'devops-pipeline-01', url: 'https://github.com/syedtehseen/tweet-trend-new.git'
+                git branch: 'main', url: 'https://github.com/syedtehseen/devopshelloworld.git'
             }
         }
         stage('Maven Build') {
