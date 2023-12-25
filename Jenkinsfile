@@ -14,7 +14,7 @@ pipeline {
         }
         stage('Maven Build') {
             steps {
-                sh '/opt/apache-maven-3.9.6/bin/mvn clean deploy -X'
+                sh '/opt/apache-maven-3.9.6/bin/mvn clean deploy'
             }
         }
         stage('SonarQube Analysis') {
@@ -23,7 +23,7 @@ pipeline {
             }
             steps {
                 withSonarQubeEnv('dops-sonarcube-server') {
-                    sh "${scannerHome}/bin/sonar-scanner -X"
+                    sh "${scannerHome}/bin/sonar-scanner"
                 }
             }
         }
