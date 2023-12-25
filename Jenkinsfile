@@ -12,11 +12,24 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/syedtehseen/devopshelloworld.git'
             }
         }
+        // environment {
+        //     PATH = /opt/apache-maven-3.9.6/bin/:$PATH
+        // }        
         stage('Maven Build') {
             steps {
-                sh '/opt/apache-maven-3.9.6/bin/mvn clean deploy'
+                echo '------------------ Maven build started ----------------'
+                sh '/opt/apache-maven-3.9.6/bin/mvn clean deploy -Dmaven.test.skip=true'
+                echo '------------------ Maven build completed ----------------'
             }
         }
+        stage('Unit Test') {
+            steps {
+                echo '------------------ Unit Test started ----------------'
+                sh '/opt/apache-maven-3.9.6/bin/mvn surefire-report:report'
+                echo '------------------ Unit Test Completed ----------------'
+            }
+        }
+
         stage('SonarQube Analysis') {
             environment {
                 scannerHome = tool 'dops-sonar-scanner'
